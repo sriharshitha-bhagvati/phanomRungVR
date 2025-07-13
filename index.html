@@ -10,7 +10,7 @@
 
         let hypertravel = () => {
             let going = this.el.getAttribute('dest');
-            window.top.location.replace(going);
+            window.open(going, '_self');
         }
 
         this.el.addEventListener('click', hypertravel);
