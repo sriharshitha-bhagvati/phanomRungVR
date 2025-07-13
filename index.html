@@ -1,207 +1,91 @@
-<!--HTTPS only...-->
 <html>
   <head>
     <title>Phnom Penh Temple 3D Experience Page</title>
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"> </script>
-<script src="https://unpkg.com/aframe-animation-component@^5.1.2/dist/aframe-animation-component.min.js"></script>
-    <script>
-    
-    AFRAME.registerComponent('travel', {
-
-    init: function () {
-
-        let hypertravel = () => {
-            let going = this.el.getAttribute('dest');
-            window.top.location.replace(going);
-        }
-
-        this.el.addEventListener('click', hypertravel);
-        
-    }});
-    
-AFRAME.registerComponent('genable', {
-
-    init: function () {
-
-        let turnable = () => {
-
-            var currotate = document.getElementById('rotatable');
-            var ncl = this.el.getAttribute('color');
-            this.el.setAttribute('id', 'rotatable');
-            currotate.setAttribute('id', 'anything');
-
-        }
-
-        this.el.addEventListener('click', turnable);
-        
-    }});
-    
-AFRAME.registerComponent('blocking', {
-    schema: {
-        blkMinLimit:       {type: 'vec3', default: {x:-20, y:-20, z:-20}},
-        blkMaxLimit:       {type: 'vec3', default: {x:20, y:20, z:20}}
-    },
-    init: function () {
-        var minlts = this.data.blkMinLimit;
-        var maxlts = this.data.blkMaxLimit;
-        
-        var blk_elem = document.createElement('a-plane');
-        blk_elem.setAttribute('id', 'blocker');
-        blk_elem.setAttribute('position', {x: minlts.x,
-                                           y: minlts.y,
-                                           z: minlts.z});
-        blk_elem.setAttribute('rotation', {x: maxlts.x,
-                                           y: maxlts.y,
-                                           z: maxlts.z});
-        blk_elem.style.visibility = "hidden";
-        this.el.appendChild(blk_elem);
-    }
-});
-
-AFRAME.registerPrimitive('a-block', {
-    defaultComponents: {
-        blocking: {}
-    },
-    mappings: {
-        maxlimit: 'blocking.blkMaxLimit',
-        minlimit: 'blocking.blkMinLimit'
-    }
-});
-
-function climb(h) {
-    cam = document.getElementById('cam');
-    cam_pos = cam.getAttribute('position');
-
-    if (h === '6') {
-        cam.setAttribute('position', {x:cam_pos.x,
-                                      y:cam_pos.y + 1.0,
-                                      z:cam_pos.z});
-    }
-    if (h === '9') {
-        cam.setAttribute('position', {x:cam_pos.x,
-                                      y:cam_pos.y - 1.0,
-                                      z:cam_pos.z});
-    }
-    if (h === 'f') {
-        cam.setAttribute('position', {x:cam_pos.x,
-                                      y:cam_pos.y,
-                                      z:cam_pos.z - 1.0});
-    }
-    if (h === 'v') {
-        cam.setAttribute('position', {x:cam_pos.x,
-                                      y:cam_pos.y,
-                                      z:cam_pos.z + 1.0});
-    }
-}
-
-function itemrotate(h) {
-    let rot_elem = document.getElementById('rotatable');
-    let init_ang = rot_elem.getAttribute('rotation');    /* Initial Angles */
-    
-    /* Check which key is pressed and do proper rotation */
-    /* We rotate by 5 degrees each time a key is pressed */
-    if (h === 'l')
-        rot_elem.setAttribute('rotation',
-                           {x: init_ang.x,
-                            y:init_ang.y+5,
-                            z: init_ang.z});
-    if (h === 'u')
-        rot_elem.setAttribute('rotation',
-                           {x: init_ang.x+5,
-                            y:init_ang.y,
-                            z: init_ang.z});
-    if (h === 'r')
-        rot_elem.setAttribute('rotation',
-                           {x: init_ang.x,
-                            y:init_ang.y-5,
-                            z: init_ang.z});
-    if (h === 'b')
-        rot_elem.setAttribute('rotation',
-                           {x: init_ang.x-5,
-                            y:init_ang.y,
-                             z: init_ang.z});
-}
-
-function blockmove(h) {
-    var cam_elem = document.getElementById("cam");
-    var cam_loc = cam_elem.getAttribute('position');
-    var cam_blk = document.getElementById('blocker');
-    
-    if ((h === 'l') || (h === 'r') ||
-        (h === 'u') || (h === 'b'))
-        itemrotate(h);
-    else if ((h === '9') || (h === '6'))
-        climb(h);
-    if (cam_blk !== null) {
-        var cam_blk_x_min = cam_blk.getAttribute('position').x;
-        var cam_blk_x_max = cam_blk.getAttribute('rotation').x;
-        
-        if ((h === 'a') || (h === 'ArrowLeft')) {
-            if ((cam_loc.x - 1) <= cam_blk_x_min) {
-                cam_elem.setAttribute('position',
-                                      {x: cam_blk_x_min+1, y:cam_loc.y,
-                                       z: cam_loc.z});
-            } else {
-                cam_elem.setAttribute('position', {x: cam_loc.x - 1.0,
-                                                   y: cam_loc.y,
-                                                   z: cam_loc.z});
-            }
-        }
-        if ((h === 'd') || (h === 'ArrowRight')) {
-            if ((cam_loc.x + 1) >= cam_blk_x_max) {
-                cam_elem.setAttribute('position',
-                                      {x: cam_blk_x_max-1, y:cam_loc.y,
-                                       z: cam_loc.z});
-            } else {
-                cam_elem.setAttribute('position', {x: cam_loc.x + 1.0,
-                                                   y: cam_loc.y,
-                                                   z: cam_loc.z});
-            }
-        }
-    }
-}
-
-function keyp(e) {
-    blockmove(e.key);
-}
-
-document.addEventListener('keydown', keyp); /* Action for key press */
-    
-    </script>
-    
-   
+<!--    <script src="https://unpkg.com/aframe-animation-component@^5.1.2/dist/aframe-animation-component.min.js"></script> --
+    --    -->
+    <script src="../WebVRAssets/geometry.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@5.x.x/dist/aframe-event-set-component.min.js"></script>
   </head>
 
   <body>
     <a-scene>
       <a-assets>
         <a-asset-item id="phnompenh"
-               src="https://static.wixstatic.com/3d/3234f0_f1e49a586298454ca3bff133bc577159.glb"
-            response-type="arraybuffer"></a-asset-item>
-        
+                      src="../WebVRAssets/5_25_2025.glb"
+                      response-type="arraybuffer"></a-asset-item>
       </a-assets>
 
       <a-entity cursor="rayOrigin: mouse"></a-entity>
-      <!--<a-camera id="cam" position="0 1.5 0"></a-camera>-->
-      <!--<a-sky color="#70c0ff"></a-sky>-->
-      <a-entity id="phnompenh" position="40 -10 -250">
-      <!--     <a-box  color="black" width=".5" height="2" depth="1"></a-box>-->
-        <a-gltf-model position="0 0 0" rotation="0 0 0"
-                      src="#phnompenh" scale="0.5 0.5 0.5"
-                      animation="property: rotation; to: 0 360 0; 
-                                 easing: easeInOutSine; dur: 3000; 
-                                 loop: false; elasticity: 0">
-                      </a-gltf-model>
-        
-        <a-sphere position="-16 20.5 40" radius="10" color="red"
+      <a-camera id="cam" position="3 1.5 0"></a-camera>
+      <a-sky color="#248048"></a-sky>
+      <a-entity id="phnompenh" position="-1 -2.5 -15"
+                animation="property: rotation; to: 0 368 0; 
+                           easing: easeInOutSine; dur: 8000; 
+                           loop: false; elasticity: 0">
+        <a-gltf-model position="0 0 0"
+                      rotation="0 -315 0"
+                      src="#phnompenh" scale="10 10 10"
+                      id="notrotated">
+        </a-gltf-model>
+        <a-circle position="0.8 5.5 5.5"
+                  radius="0.45" id="rotatable"
+                  color="#ff0"
+                  dest="https://www.facebook.com" travel>
+          <a-text value="History" position="0 0.7 0" id="TXT"
+                  opacity="1" align="center" color="fff" scale="2 2 2">
+          </a-text>
+        </a-circle>
+        <a-circle position="6 4.4 8"
+                  radius="0.45" id="rotatable"
+                  color="#ff0"
                   dest="https://www.google.com" travel>
-          <a-image src="https://static.wixstatic.com/media/3234f0_14486a65a7a24c589b413d195908ceb7~mv2.png" position="0 0 11" scale= "10 10 10"></a-image>
-          
-        </a-sphere>
+          <a-text value="Architecture" position="0 0.7 0" id="TXT"
+                  opacity="1" align="center" color="fff" scale="2 2 2">
+          </a-text>
+        </a-circle>
+        <a-circle position="-2 8 3.5"
+                  radius="0.45"
+                  color="#ff0"
+                  dest="https://www.facebook.com" travel>
+          <a-text value="Structural Elements" position="0 0.7 0" id="TXT"
+                  opacity="1" align="right" color="fff" scale="2 2 2">
+          </a-text>
+        </a-circle>
+        <a-circle position="1 10 3.5"
+                  radius="0.45" id="rotatable"
+                  color="#ff0"
+                  dest="https://www.linkedin.com" travel>
+          <a-text value="Materials" position="0 0.7 0" id="TXT"
+                  opacity="1" align="center" color="fff" scale="2 2 2">
+          </a-text>
+        </a-circle>
+        <a-circle position="8 0.5 9" 
+                  radius="0.25" id="rotatable"
+                  color="#ff0" rotation="-60 0 0"
+                  dest="https://www.linkedin.com" travel>
+          <a-text value="Plan & Elevation" position="-0.2 0.5 0" id="TXT"
+                  opacity="1" align="left" color="fff" scale="2 2 2">
+          </a-text>
+        </a-circle>
+        <a-circle position="4.25 3.5 7.25" 
+                  radius="0.25" id="rotatable"
+                  color="#ff0" rotation="-25 -75 0"
+                  dest="https://www.linkedin.com" travel>
+          <a-text value="Media" position="-0.2 0.5 0" id="TXT"
+                  opacity="1" align="left" color="fff" scale="2 2 2">
+          </a-text>
+        </a-circle>
       </a-entity>
-      
-      <a-sky src="https://static.wixstatic.com/media/3234f0_119374faab094957bac45b1de88dce04~mv2.jpg"></a-sky>
+      <a-plane position="0 5 5" color="white" opacity="0"
+              animation__mouseenter="property:
+              components.material.material.color; type:color; to:
+              blue; startEvents: mouseenter; pauseEvents: mouseleave;
+              dur: 2000";
+              animation__mouseleave="property:
+              components.material.material.color; type: color; to:
+              white; startEvents: mouseleave; dur: 10";>
+      </a-plane>
     </a-scene>
-    
   </body>
 </html>
