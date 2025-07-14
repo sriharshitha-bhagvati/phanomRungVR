@@ -1,171 +1,115 @@
 <html>
   <head>
     <title>Phnom Penh Temple 3D Experience Page</title>
-    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"> </script>
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
     <script>
-        
-        AFRAME.registerComponent('travel', {
 
-    init: function () {
-
-        let hypertravel = () => {
+      AFRAME.registerComponent('travel', {
+        init: function () {
+          let hypertravel = () => {
             let going = this.el.getAttribute('dest');
             window.open(going, '_self');
+          }
+          this.el.addEventListener('click', hypertravel);
         }
+      });
 
-        this.el.addEventListener('click', hypertravel);
-        
-    }});
-    
-AFRAME.registerComponent('genable', {
+      AFRAME.registerComponent('playaudio', {
+        init: function () {
+          const audio = document.querySelector('#audioguide');
+          let isPlaying = false;
+          this.el.addEventListener('click', () => {
+            if (!isPlaying) {
+              audio.play();
+              isPlaying = true;
+            } else {
+              audio.pause();
+              audio.currentTime = 0;
+              isPlaying = false;
+            }
+          });
+        }
+      });
 
-    init: function () {
-
-        let turnable = () => {
-
+      AFRAME.registerComponent('genable', {
+        init: function () {
+          let turnable = () => {
             var currotate = document.getElementById('rotatable');
             var ncl = this.el.getAttribute('color');
             this.el.setAttribute('id', 'rotatable');
             currotate.setAttribute('id', 'anything');
-
+          }
+          this.el.addEventListener('click', turnable);
         }
+      });
 
-        this.el.addEventListener('click', turnable);
-        
-    }});
-    
-AFRAME.registerComponent('blocking', {
-    schema: {
-        blkMinLimit:       {type: 'vec3', default: {x:-20, y:-20, z:-20}},
-        blkMaxLimit:       {type: 'vec3', default: {x:20, y:20, z:20}}
-    },
-    init: function () {
-        var minlts = this.data.blkMinLimit;
-        var maxlts = this.data.blkMaxLimit;
-        
-        var blk_elem = document.createElement('a-plane');
-        blk_elem.setAttribute('id', 'blocker');
-        blk_elem.setAttribute('position', {x: minlts.x,
-                                           y: minlts.y,
-                                           z: minlts.z});
-        blk_elem.setAttribute('rotation', {x: maxlts.x,
-                                           y: maxlts.y,
-                                           z: maxlts.z});
-        blk_elem.style.visibility = "hidden";
-        this.el.appendChild(blk_elem);
-    }
-});
-
-AFRAME.registerPrimitive('a-block', {
-    defaultComponents: {
-        blocking: {}
-    },
-    mappings: {
-        maxlimit: 'blocking.blkMaxLimit',
-        minlimit: 'blocking.blkMinLimit'
-    }
-});
-
-function climb(h) {
-    cam = document.getElementById('cam');
-    cam_pos = cam.getAttribute('position');
-
-    if (h === '6') {
-        cam.setAttribute('position', {x:cam_pos.x,
-                                      y:cam_pos.y + 0.2,
-                                      z:cam_pos.z});
-    }
-    if (h === '9') {
-        cam.setAttribute('position', {x:cam_pos.x,
-                                      y:cam_pos.y - 0.2,
-                                      z:cam_pos.z});
-    }
-    if (h === 'f') {
-        cam.setAttribute('position', {x:cam_pos.x,
-                                      y:cam_pos.y,
-                                      z:cam_pos.z - 0.2});
-    }
-    if (h === 'v') {
-        cam.setAttribute('position', {x:cam_pos.x,
-                                      y:cam_pos.y,
-                                      z:cam_pos.z + 0.2});
-    }
-}
-
-function itemrotate(h) {
-    let rot_elem = document.getElementById('rotatable');
-    let init_ang = rot_elem.getAttribute('rotation');    /* Initial Angles */
-    
-    /* Check which key is pressed and do proper rotation */
-    /* We rotate by 5 degrees each time a key is pressed */
-    if (h === 'l')
-        rot_elem.setAttribute('rotation',
-                           {x: init_ang.x,
-                            y:init_ang.y+5,
-                            z: init_ang.z});
-    if (h === 'u')
-        rot_elem.setAttribute('rotation',
-                           {x: init_ang.x+5,
-                            y:init_ang.y,
-                            z: init_ang.z});
-    if (h === 'r')
-        rot_elem.setAttribute('rotation',
-                           {x: init_ang.x,
-                            y:init_ang.y-5,
-                            z: init_ang.z});
-    if (h === 'b')
-        rot_elem.setAttribute('rotation',
-                           {x: init_ang.x-5,
-                            y:init_ang.y,
-                             z: init_ang.z});
-}
-
-function blockmove(h) {
-    var cam_elem = document.getElementById("cam");
-    var cam_loc = cam_elem.getAttribute('position');
-    var cam_blk = document.getElementById('blocker');
-    
-    if ((h === 'l') || (h === 'r') ||
-        (h === 'u') || (h === 'b'))
-        itemrotate(h);
-    else if ((h === '9') || (h === '6'))
-        climb(h);
-    if (cam_blk !== null) {
-        var cam_blk_x_min = cam_blk.getAttribute('position').x;
-        var cam_blk_x_max = cam_blk.getAttribute('rotation').x;
-        
-        if ((h === 'a') || (h === 'ArrowLeft')) {
-            if ((cam_loc.x - 1) <= cam_blk_x_min) {
-                cam_elem.setAttribute('position',
-                                      {x: cam_blk_x_min+1, y:cam_loc.y,
-                                       z: cam_loc.z});
-            } else {
-                cam_elem.setAttribute('position', {x: cam_loc.x - 0.1,
-                                                   y: cam_loc.y,
-                                                   z: cam_loc.z});
-            }
+      AFRAME.registerComponent('blocking', {
+        schema: {
+          blkMinLimit: {type: 'vec3', default: {x:-20, y:-20, z:-20}},
+          blkMaxLimit: {type: 'vec3', default: {x:20, y:20, z:20}}
+        },
+        init: function () {
+          var minlts = this.data.blkMinLimit;
+          var maxlts = this.data.blkMaxLimit;
+          var blk_elem = document.createElement('a-plane');
+          blk_elem.setAttribute('id', 'blocker');
+          blk_elem.setAttribute('position', {x: minlts.x, y: minlts.y, z: minlts.z});
+          blk_elem.setAttribute('rotation', {x: maxlts.x, y: maxlts.y, z: maxlts.z});
+          blk_elem.style.visibility = "hidden";
+          this.el.appendChild(blk_elem);
         }
-        if ((h === 'd') || (h === 'ArrowRight')) {
-            if ((cam_loc.x + 1) >= cam_blk_x_max) {
-                cam_elem.setAttribute('position',
-                                      {x: cam_blk_x_max-1, y:cam_loc.y,
-                                       z: cam_loc.z});
-            } else {
-                cam_elem.setAttribute('position', {x: cam_loc.x + 0.1,
-                                                   y: cam_loc.y,
-                                                   z: cam_loc.z});
-            }
+      });
+
+      AFRAME.registerPrimitive('a-block', {
+        defaultComponents: { blocking: {} },
+        mappings: {
+          maxlimit: 'blocking.blkMaxLimit',
+          minlimit: 'blocking.blkMinLimit'
         }
-    }
-}
+      });
 
-function keyp(e) {
-    blockmove(e.key);
-}
+      function climb(h) {
+        cam = document.getElementById('cam');
+        cam_pos = cam.getAttribute('position');
+        if (h === '6') cam.setAttribute('position', {x:cam_pos.x, y:cam_pos.y + 0.2, z:cam_pos.z});
+        if (h === '9') cam.setAttribute('position', {x:cam_pos.x, y:cam_pos.y - 0.2, z:cam_pos.z});
+        if (h === 'f') cam.setAttribute('position', {x:cam_pos.x, y:cam_pos.y, z:cam_pos.z - 0.2});
+        if (h === 'v') cam.setAttribute('position', {x:cam_pos.x, y:cam_pos.y, z:cam_pos.z + 0.2});
+      }
 
-document.addEventListener('keydown', keyp); /* Action for key press */
+      function itemrotate(h) {
+        let rot_elem = document.getElementById('rotatable');
+        let init_ang = rot_elem.getAttribute('rotation');
+        if (h === 'l') rot_elem.setAttribute('rotation', {x: init_ang.x, y:init_ang.y+5, z: init_ang.z});
+        if (h === 'u') rot_elem.setAttribute('rotation', {x: init_ang.x+5, y:init_ang.y, z: init_ang.z});
+        if (h === 'r') rot_elem.setAttribute('rotation', {x: init_ang.x, y:init_ang.y-5, z: init_ang.z});
+        if (h === 'b') rot_elem.setAttribute('rotation', {x: init_ang.x-5, y:init_ang.y, z: init_ang.z});
+      }
 
-      
+      function blockmove(h) {
+        var cam_elem = document.getElementById("cam");
+        var cam_loc = cam_elem.getAttribute('position');
+        var cam_blk = document.getElementById('blocker');
+        if ((h === 'l') || (h === 'r') || (h === 'u') || (h === 'b')) itemrotate(h);
+        else if ((h === '9') || (h === '6')) climb(h);
+        if (cam_blk !== null) {
+          var cam_blk_x_min = cam_blk.getAttribute('position').x;
+          var cam_blk_x_max = cam_blk.getAttribute('rotation').x;
+          if ((h === 'a') || (h === 'ArrowLeft')) {
+            cam_elem.setAttribute('position', {x: Math.max(cam_loc.x - 0.1, cam_blk_x_min+1), y: cam_loc.y, z: cam_loc.z});
+          }
+          if ((h === 'd') || (h === 'ArrowRight')) {
+            cam_elem.setAttribute('position', {x: Math.min(cam_loc.x + 0.1, cam_blk_x_max-1), y: cam_loc.y, z: cam_loc.z});
+          }
+        }
+      }
+
+      function keyp(e) {
+        blockmove(e.key);
+      }
+
+      document.addEventListener('keydown', keyp);
+
     </script>
     <script src="https://unpkg.com/aframe-event-set-component@5.x.x/dist/aframe-event-set-component.min.js"></script>
   </head>
@@ -174,80 +118,57 @@ document.addEventListener('keydown', keyp); /* Action for key press */
     <a-scene>
       <a-assets>
         <a-asset-item id="phnompenh"
-                      src="https://raw.githubusercontent.com/sriharshitha-bhagvati/phanomRungVR/main/temple.glb"
-                      response-type="arraybuffer"></a-asset-item>
+          src="https://raw.githubusercontent.com/sriharshitha-bhagvati/phanomRungVR/main/temple.glb"
+          response-type="arraybuffer"></a-asset-item>
+
+        <!-- Audio File -->
+        <audio id="audioguide" src="https://raw.githubusercontent.com/sriharshitha-bhagvati/phanomRungVR/main/PhanomRungAudio.mp3" preload="auto"></audio>
       </a-assets>
 
       <a-entity cursor="rayOrigin: mouse"></a-entity>
       <a-camera id="cam" position="2 2 3"></a-camera>
       <a-sky src="https://raw.githubusercontent.com/sriharshitha-bhagvati/phanomRungVR/main/bg-beige-landscape.jpg"></a-sky>
+
       <a-entity id="rotatable" position="-1 -2.5 -15"
-                animation="property: rotation; to: 0 368 0; 
-                           easing: easeInOutSine; dur: 2000; 
-                           loop: false; elasticity: 0">
-        <a-gltf-model position="6 2 0"
-                      rotation="0 345 0"
-                      src="#phnompenh" scale="0.050 0.050 0.050"
-                      id="notrotated">
-        </a-gltf-model>
-        <a-circle position="0.8 5.5 7"
-                  radius="0.45" id="rotatable"
-                  color="#4f3428"
-                  dest="https://sriharshithab.wixstudio.com/temples/phanomrung" travel>
-          <a-text value="Read More" position="0 0.7 0" id="TXT"
-                  opacity="1" align="center" color="#000000" scale="2 2 2">
-          </a-text>
+        animation="property: rotation; to: 0 368 0; easing: easeInOutSine; dur: 2000; loop: false; elasticity: 0">
+        <a-gltf-model position="6 2 0" rotation="0 345 0" src="#phnompenh"
+          scale="0.050 0.050 0.050" id="notrotated"></a-gltf-model>
+
+        <a-circle position="0.8 5.5 7" radius="0.45" id="rotatable" color="#4f3428"
+          dest="https://sriharshithab.wixstudio.com/temples/phanomrung" travel>
+          <a-text value="Read More" position="0 0.7 0" id="TXT" opacity="1"
+            align="center" color="#000000" scale="2 2 2"></a-text>
         </a-circle>
-        <a-circle position="6 4.4 8"
-                  radius="0.45" id="rotatable"
-                  color="#4f3428"
-                  dest="https://sriharshithab.wixstudio.com/temples/prvideo" travel>
+        <a-image src="https://raw.githubusercontent.com/sriharshitha-bhagvati/phanomRungVR/main/web-browser.png" position="0.8 5.5 7.5" width="0.5" height="0.5"></a-image>
+
+        <a-circle position="6 4.4 8" radius="0.45" id="rotatable" color="#4f3428"
+          dest="https://sriharshithab.wixstudio.com/temples/prvideo" travel>
           <a-text value="Video Explanation" position="0 0.7 0" id="TXT"
-                  opacity="1" align="center" color="#000000" scale="2 2 2">
-          </a-text>
+            opacity="1" align="center" color="#000000" scale="2 2 2"></a-text>
         </a-circle>
-        <a-circle position="-2 8 3.5"
-                  radius="0.45"
-                  color="#4f3428"
-                  dest="https://sriharshithab.wixstudio.com/temples/praudio" travel>
-          <a-text value="Audio Guide" position="0 0.7 0" id="TXT"
-                  opacity="1" align="right" color="#000000" scale="2 2 2">
-          </a-text>
+        <a-image src="https://raw.githubusercontent.com/sriharshitha-bhagvati/phanomRungVR/main/video-camera.png" position="5.9 4.4 8.2" width="0.4" height="0.4"></a-image>
+
+        <a-circle position="-2 8 3.5" radius="0.45" color="#4f3428" playaudio>
+          <a-text value="Audio Guide" position="0 0.7 0" id="TXT" opacity="1"
+            align="right" color="#000000" scale="2 2 2"></a-text>
         </a-circle>
-        <a-circle position="1 10 3.5"
-                  radius="0.45" id="rotatable"
-                  color="#4f3428"
-                  dest="https://sriharshithab.wixstudio.com/temples/prvrtour" travel>
-          <a-text value="VR Tour" position="0 0.7 0" id="TXT"
-                  opacity="1" align="center" color="#000000" scale="2 2 2">
-          </a-text>
+        <a-image src="https://raw.githubusercontent.com/sriharshitha-bhagvati/phanomRungVR/main/speaker-filled-audio-tool.png" position="-2 7.95 3.7" width="0.5" height="0.5"></a-image>
+
+        <a-circle position="1 10 3.5" radius="0.45" id="rotatable" color="#4f3428"
+          dest="https://sriharshithab.wixstudio.com/temples/prvrtour" travel>
+          <a-text value="VR Tour" position="0 0.7 0" id="TXT" opacity="1"
+            align="center" color="#000000" scale="2 2 2"></a-text>
         </a-circle>
-        <!--<a-circle position="8 0.5 9" 
-                  radius="0.45" id="rotatable"
-                  color="#4f3428" rotation="-60 0 0"
-                  dest="https://www.linkedin.com" travel>
-          <a-text value="Media" position="-0.2 0.5 0" id="TXT"
-                  opacity="1" align="left" color="#000000" scale="2 2 2">
-          </a-text>-->
+        <a-image src="https://raw.githubusercontent.com/sriharshitha-bhagvati/phanomRungVR/main/vr-glasses.png" position="1 9.9 3.8" width="0.5" height="0.5"></a-image>
+
+        <a-circle position="-4.25 1 4" radius="0.45" id="rotatable" color="#4f3428"
+          rotation="0 0 0" dest="https://sriharshithab.wixstudio.com/temples/prmedia" travel>
+          <a-text value="Media" position="-0.5 0.7 0" id="TXT" opacity="1"
+            align="left" color="#000000" scale="2 2 2"></a-text>
         </a-circle>
-        <a-circle position="-4.25 1 4" 
-                  radius="0.45" id="rotatable"
-                  color="#4f3428" rotation="0 0 0"
-                  dest="https://sriharshithab.wixstudio.com/temples/prmedia" travel>
-          <a-text value="Media" position="-0.5 0.7 0" id="TXT"
-                  opacity="1" align="left" color="#000000" scale="2 2 2">
-          </a-text>
-        </a-circle>
+        <a-image src="https://raw.githubusercontent.com/sriharshitha-bhagvati/phanomRungVR/main/gallery.png" position="-4.10 1.1 4.5" width="0.5" height="0.5"></a-image> 
+
       </a-entity>
-      <a-plane position="0 5 5" color="white" opacity="0"
-              animation__mouseenter="property:
-              components.material.material.color; type:color; to:
-              blue; startEvents: mouseenter; pauseEvents: mouseleave;
-              dur: 2000";
-              animation__mouseleave="property:
-              components.material.material.color; type: color; to:
-              white; startEvents: mouseleave; dur: 10";>
-      </a-plane>
     </a-scene>
   </body>
 </html>
